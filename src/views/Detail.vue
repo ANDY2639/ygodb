@@ -1,7 +1,6 @@
 <template>
-  <div>
+  <div class="space-y-4">
     <NavBarDetail />
-
     <CardDetail :id="$route.params.id" />
   </div>
 </template>

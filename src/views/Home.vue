@@ -4,11 +4,12 @@
       <Cards />
     </template>
     <template #fallback>
-      <p>Loading...</p>
+      <CardSkeleton :count="8" />
     </template>
   </Suspense>
 </template>
 
 <script setup>
 import Cards from "@/components/Cards.vue";
+import CardSkeleton from "@/components/CardSkeleton.vue";
 </script>

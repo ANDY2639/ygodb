@@ -1,7 +1,10 @@
 <template>
-  <nav class="nav nav-pills flex-sm-row justify-content-evenly border border-primary p-1" style="margin-top: 3.25rem">
-    <a class="flex-sm-fill text-sm-center nav-link active" aria-current="page" href="#">Detail</a>
-    <a class="flex-sm-fill text-sm-center nav-link" href="#">Sets</a>
-    <a class="flex-sm-fill text-sm-center nav-link" href="#">Prices</a>
-  </nav>
+  <div role="tablist" class="tabs tabs-boxed bg-scanner-card border border-scanner p-1">
+    <a role="tab" class="tab tab-active text-cyan-600 dark:text-cyan-400 font-mono text-xs">Detail</a>
+    <a role="tab" class="tab text-scanner-dim font-mono text-xs">Sets</a>
+    <a role="tab" class="tab text-scanner-dim font-mono text-xs">Prices</a>
+  </div>
 </template>
+
+<script setup>
+</script>
