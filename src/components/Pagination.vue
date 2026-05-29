@@ -19,14 +19,14 @@
           <template v-for="p in visiblePages" :key="p">
             <button
               v-if="p === '...'"
-              class="btn btn-sm btn-ghost btn-disabled px-1 min-w-[1.5rem] font-mono text-xs text-[#94a3b8]/40"
+              class="btn btn-sm btn-ghost btn-disabled px-1 min-w-6 font-mono text-xs text-[#94a3b8]/40"
               disabled
             >
               …
             </button>
             <button
               v-else
-              class="btn btn-sm min-w-[2rem] font-mono text-xs"
+              class="btn btn-sm min-w-8 font-mono text-xs"
               :class="p === currentPage ? 'bg-[#00f0ff]/20 border border-[#00f0ff]/40 text-[#00f0ff]' : 'bg-[#111827] border border-[#1e293b] text-[#94a3b8] hover:border-[#00f0ff]/30 hover:text-[#00f0ff]'"
               @click="$emit('change', p)"
             >

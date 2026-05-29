@@ -5,6 +5,3 @@
     <a role="tab" class="tab text-scanner-dim font-mono text-xs">Prices</a>
   </div>
 </template>
-
-<script setup>
-</script>

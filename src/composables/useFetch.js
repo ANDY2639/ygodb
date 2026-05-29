@@ -2,7 +2,7 @@ import { ref } from "vue";
 import config from "@/config";
 
 const CACHE = new Map();
-const CACHE_TTL = 60_000; // 60s cache for search results
+const CACHE_TTL = 60_000;
 
 export default function useFetch(options = {}) {
   const result = ref(null);
