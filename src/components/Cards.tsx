@@ -81,6 +81,19 @@ export default function Cards() {
   const disabledInputNotMonster = ['spell', 'trap'].includes(filters.race || '');
   const raceOptionsValue = filters.race ? raceOptions[filters.race] || [] : [];
 
+  const activeCount = [
+    filters.archetype,
+    filters.race,
+    filters.raceOption,
+    filters.attribute,
+    filters.type,
+    filters.atk,
+    filters.def,
+    filters.level,
+    filters.scale,
+    filters.link,
+  ].filter(Boolean).length;
+
   const initialQueryRef = useRef(filters.q);
 
   const debouncedSearch = useCallback(
@@ -153,8 +166,8 @@ export default function Cards() {
       <div className="space-y-4">
         <div className="scanner-card-frame rounded-lg bg-scanner-panel border border-scanner p-3">
           <form role="search" className="flex gap-2" onSubmit={(e) => { e.preventDefault(); executeSearch(); }}>
-            <label className="input input-bordered flex-1 flex items-center gap-2 bg-scanner-card border-scanner font-mono text-sm">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-cyan-500/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <label className="input input-bordered flex-1 flex items-center gap-2 bg-scanner-card border-scanner font-mono text-sm outline-0">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-scanner-glow/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <input
@@ -170,12 +183,12 @@ export default function Cards() {
             </label>
             <button
               type="submit"
-              className="btn btn-sm btn-square bg-cyan-500/10 border border-cyan-500/30 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-500/20 hover:border-cyan-500/50 active:scale-95 transition-transform"
+              className="btn btn-sm btn-square h-10 w-10 bg-scanner-glow/10 border border-scanner-glow/30 text-scanner-glow hover:bg-scanner-glow/20 hover:border-scanner-glow/50 active:scale-95 transition-transform"
               disabled={isFetching}
               aria-label="Search"
             >
               {isFetching ? (
-                <span className="loading loading-spinner loading-xs text-cyan-500"></span>
+                <span className="loading loading-spinner loading-xs text-scanner-glow"></span>
               ) : (
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -184,11 +197,16 @@ export default function Cards() {
             </button>
             <button
               type="button"
-              className={`btn btn-sm btn-square bg-scanner-card border border-scanner text-scanner-dim hover:border-cyan-500/30 hover:text-cyan-500 active:scale-95 transition-transform ${filters.advanced ? 'border-cyan-500/50 text-cyan-500' : ''}`}
+              className={`relative btn btn-sm btn-square h-10 w-10 bg-scanner-card border text-scanner-dim hover:border-scanner-glow/30 hover:text-scanner-glow active:scale-95 transition-transform ${filters.advanced || activeCount > 0 ? 'border-scanner-glow/50 text-scanner-glow' : 'border-scanner'}`}
               onClick={() => setFilters({ advanced: !filters.advanced })}
               aria-label={filters.advanced ? 'Close filters' : 'Open filters'}
               aria-expanded={filters.advanced}
             >
+              {activeCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 w-4.5 h-4.5 rounded-full bg-scanner-glow text-[9px] font-bold flex items-center justify-center text-scanner-deep leading-none z-10 shadow-xs shadow-scanner-glow/30">
+                  {activeCount}
+                </span>
+              )}
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
               </svg>
@@ -197,245 +215,319 @@ export default function Cards() {
         </div>
 
         {filters.advanced && (
-          <div className="bg-scanner-panel border border-scanner rounded-lg p-4 mt-3">
-            <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); executeAdvancedSearch(); }}>
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                <label htmlFor="filter-archetype" className="sm:w-48 text-sm font-medium text-scanner-dim shrink-0">Archetypes</label>
-                <select
-                  id="filter-archetype"
-                  className="select select-bordered flex-1 bg-scanner-card border-scanner text-scanner"
-                  value={filters.archetype}
-                  onChange={(e) => setFilters({ archetype: e.target.value })}
-                  disabled={disabledInputNotMonster}
+          <div className="bg-scanner-panel border border-scanner rounded-lg p-4 mt-3 transition-all duration-300">
+            <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); executeAdvancedSearch(); }}>
+
+              {/* SECTION: CARD TYPE */}
+              <div>
+                <h4 className="text-[10px] font-mono text-scanner-label tracking-widest mb-3 flex items-center gap-2 uppercase">
+                  <span className="w-1.5 h-1.5 rounded-full bg-scanner-glow/50"></span>
+                  Card Type
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Archetype */}
+                  <div className="form-control">
+                    <label htmlFor="filter-archetype" className="label py-0.5 min-h-0">
+                      <span className="label-text font-mono text-[10px] text-scanner-label tracking-wider">ARCHETYPE</span>
+                    </label>
+                    <select
+                      id="filter-archetype"
+                      className={`select select-bordered bg-scanner-card text-scanner-text font-mono text-xs w-full ${filters.archetype ? 'border-scanner-glow/40' : 'border-scanner'}`}
+                      value={filters.archetype}
+                      onChange={(e) => setFilters({ archetype: e.target.value })}
+                      disabled={disabledInputNotMonster}
+                    >
+                      <option value="">ALL</option>
+                      {archetypes.map((archetype, a) => (
+                        <option key={a} value={archetype}>{archetype}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Race Card */}
+                  <div className="form-control">
+                    <label className="label py-0.5 min-h-0">
+                      <span className="label-text font-mono text-[10px] text-scanner-label tracking-wider">RACE CARD</span>
+                    </label>
+                    <div className="flex gap-2">
+                      <select
+                        id="filter-race-card"
+                        className={`select select-bordered flex-1 bg-scanner-card text-scanner-text font-mono text-xs w-full ${filters.race ? 'border-scanner-glow/40' : 'border-scanner'}`}
+                        value={filters.race || ''}
+                        onChange={(e) => setFilters({ race: e.target.value || null })}
+                      >
+                        <option value="">ALL</option>
+                        {races.map((race, i) => (
+                          <option key={i} value={race.toLowerCase()}>{race}</option>
+                        ))}
+                      </select>
+                      <select
+                        id="filter-race-option"
+                        className={`select select-bordered flex-1 bg-scanner-card text-scanner-text font-mono text-xs w-full ${filters.raceOption ? 'border-scanner-glow/40' : 'border-scanner'}`}
+                        value={filters.raceOption}
+                        onChange={(e) => setFilters({ raceOption: e.target.value })}
+                        disabled={!filters.race}
+                      >
+                        <option value="">ALL</option>
+                        {raceOptionsValue.map((option, j) => (
+                          <option key={j} value={option}>{option}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Attribute */}
+                  <div className="form-control">
+                    <label htmlFor="filter-attribute" className="label py-0.5 min-h-0">
+                      <span className="label-text font-mono text-[10px] text-scanner-label tracking-wider">ATTRIBUTE</span>
+                    </label>
+                    <select
+                      id="filter-attribute"
+                      className={`select select-bordered bg-scanner-card text-scanner-text font-mono text-xs w-full ${filters.attribute ? 'border-scanner-glow/40' : 'border-scanner'}`}
+                      value={filters.attribute}
+                      onChange={(e) => setFilters({ attribute: e.target.value })}
+                      disabled={disabledInputNotMonster}
+                    >
+                      <option value="">ALL</option>
+                      <option>EARTH</option>
+                      <option>WATER</option>
+                      <option>FIRE</option>
+                      <option>WIND</option>
+                      <option>LIGHT</option>
+                      <option>DARK</option>
+                      <option>DIVINE</option>
+                    </select>
+                  </div>
+
+                  {/* Type */}
+                  <div className="form-control">
+                    <label htmlFor="filter-type" className="label py-0.5 min-h-0">
+                      <span className="label-text font-mono text-[10px] text-scanner-label tracking-wider">TYPE</span>
+                    </label>
+                    <select
+                      id="filter-type"
+                      className={`select select-bordered bg-scanner-card text-scanner-text font-mono text-xs w-full ${filters.type ? 'border-scanner-glow/40' : 'border-scanner'}`}
+                      value={filters.type}
+                      onChange={(e) => setFilters({ type: e.target.value })}
+                      disabled={disabledInputNotMonster}
+                    >
+                      <option value="">ALL</option>
+                      {types.map((type, t) => (
+                        <option key={t} value={type}>{type}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* SECTION: STATS */}
+              <div>
+                <h4 className="text-[10px] font-mono text-scanner-label tracking-widest mb-3 flex items-center gap-2 uppercase">
+                  <span className="w-1.5 h-1.5 rounded-full bg-scanner-glow/50"></span>
+                  Stats
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {/* ATK */}
+                  <div className="form-control">
+                    <label className="label py-0.5 min-h-0">
+                      <span className="label-text font-mono text-[10px] text-scanner-label tracking-wider">ATK</span>
+                    </label>
+                    <div className="flex gap-2">
+                      <select
+                        id="filter-atk-op"
+                        className="select select-bordered w-20 bg-scanner-card border-scanner text-scanner-text font-mono text-xs"
+                        value={filters.atkOp}
+                        onChange={(e) => setFilters({ atkOp: e.target.value })}
+                        disabled={disabledInputNotMonster}
+                      >
+                        <option value="=">=</option>
+                        <option value="lt">&lt;</option>
+                        <option value="lte">&lt;=</option>
+                        <option value="gt">&gt;</option>
+                        <option value="gte">&gt;=</option>
+                      </select>
+                      <input
+                        id="filter-atk-val"
+                        type="number"
+                        className={`input input-bordered flex-1 bg-scanner-card font-mono text-xs text-scanner-text ${filters.atk ? 'border-scanner-glow/40' : 'border-scanner'}`}
+                        min="0"
+                        max="5000"
+                        value={filters.atk}
+                        onChange={(e) => setFilters({ atk: e.target.value })}
+                        disabled={disabledInputNotMonster}
+                        placeholder="0"
+                      />
+                    </div>
+                  </div>
+
+                  {/* DEF */}
+                  <div className="form-control">
+                    <label className="label py-0.5 min-h-0">
+                      <span className="label-text font-mono text-[10px] text-scanner-label tracking-wider">DEF</span>
+                    </label>
+                    <div className="flex gap-2">
+                      <select
+                        id="filter-def-op"
+                        className="select select-bordered w-20 bg-scanner-card border-scanner text-scanner-text font-mono text-xs"
+                        value={filters.defOp}
+                        onChange={(e) => setFilters({ defOp: e.target.value })}
+                        disabled={disabledInputNotMonster}
+                      >
+                        <option value="=">=</option>
+                        <option value="lt">&lt;</option>
+                        <option value="lte">&lt;=</option>
+                        <option value="gt">&gt;</option>
+                        <option value="gte">&gt;=</option>
+                      </select>
+                      <input
+                        id="filter-def-val"
+                        type="number"
+                        className={`input input-bordered flex-1 bg-scanner-card font-mono text-xs text-scanner-text ${filters.def ? 'border-scanner-glow/40' : 'border-scanner'}`}
+                        min="0"
+                        max="5000"
+                        value={filters.def}
+                        onChange={(e) => setFilters({ def: e.target.value })}
+                        disabled={disabledInputNotMonster}
+                        placeholder="0"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Level/Rank */}
+                  <div className="form-control">
+                    <label className="label py-0.5 min-h-0">
+                      <span className="label-text font-mono text-[10px] text-scanner-label tracking-wider">LEVEL / RANK</span>
+                    </label>
+                    <div className="flex gap-2">
+                      <select
+                        id="filter-level-op"
+                        className="select select-bordered w-20 bg-scanner-card border-scanner text-scanner-text font-mono text-xs"
+                        value={filters.lvlOp}
+                        onChange={(e) => setFilters({ lvlOp: e.target.value })}
+                        disabled={disabledInputNotMonster}
+                      >
+                        <option value="=">=</option>
+                        <option value="lt">&lt;</option>
+                        <option value="lte">&lt;=</option>
+                        <option value="gt">&gt;</option>
+                        <option value="gte">&gt;=</option>
+                      </select>
+                      <input
+                        id="filter-level-val"
+                        type="number"
+                        className={`input input-bordered flex-1 bg-scanner-card font-mono text-xs text-scanner-text ${filters.level ? 'border-scanner-glow/40' : 'border-scanner'}`}
+                        min="0"
+                        max="13"
+                        value={filters.level}
+                        onChange={(e) => setFilters({ level: e.target.value })}
+                        disabled={disabledInputNotMonster}
+                        placeholder="0"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Pendulum Scale */}
+                  <div className="form-control">
+                    <label className="label py-0.5 min-h-0">
+                      <span className="label-text font-mono text-[10px] text-scanner-label tracking-wider">PENDULUM SCALE</span>
+                    </label>
+                    <div className="flex gap-2">
+                      <select
+                        id="filter-scale-op"
+                        className="select select-bordered w-20 bg-scanner-card border-scanner text-scanner-text font-mono text-xs"
+                        value={filters.scaleOp}
+                        onChange={(e) => setFilters({ scaleOp: e.target.value })}
+                        disabled={disabledInputNotMonster}
+                      >
+                        <option value="=">=</option>
+                        <option value="lt">&lt;</option>
+                        <option value="lte">&lt;=</option>
+                        <option value="gt">&gt;</option>
+                        <option value="gte">&gt;=</option>
+                      </select>
+                      <input
+                        id="filter-scale-val"
+                        type="number"
+                        className={`input input-bordered flex-1 bg-scanner-card font-mono text-xs text-scanner-text ${filters.scale ? 'border-scanner-glow/40' : 'border-scanner'}`}
+                        min="0"
+                        max="13"
+                        value={filters.scale}
+                        onChange={(e) => setFilters({ scale: e.target.value })}
+                        disabled={disabledInputNotMonster}
+                        placeholder="0"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Link */}
+                  <div className="form-control">
+                    <label className="label py-0.5 min-h-0">
+                      <span className="label-text font-mono text-[10px] text-scanner-label tracking-wider">LINK</span>
+                    </label>
+                    <div className="flex gap-2">
+                      <select
+                        id="filter-link-op"
+                        className="select select-bordered w-20 bg-scanner-card border-scanner text-scanner-text font-mono text-xs"
+                        value={filters.linkOp}
+                        onChange={(e) => setFilters({ linkOp: e.target.value })}
+                        disabled={disabledInputNotMonster}
+                      >
+                        <option value="=">=</option>
+                        <option value="lt">&lt;</option>
+                        <option value="lte">&lt;=</option>
+                        <option value="gt">&gt;</option>
+                        <option value="gte">&gt;=</option>
+                      </select>
+                      <input
+                        id="filter-link-val"
+                        type="number"
+                        className={`input input-bordered flex-1 bg-scanner-card font-mono text-xs text-scanner-text ${filters.link ? 'border-scanner-glow/40' : 'border-scanner'}`}
+                        min="0"
+                        max="6"
+                        value={filters.link}
+                        onChange={(e) => setFilters({ link: e.target.value })}
+                        disabled={disabledInputNotMonster}
+                        placeholder="0"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Disabled hint */}
+              {disabledInputNotMonster && (
+                <div className="flex items-center gap-1.5 text-[10px] font-mono text-scanner-muted/60">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>Monster-only fields disabled for Spell/Trap cards</span>
+                </div>
+              )}
+
+              {/* Actions */}
+              <div className="flex gap-2">
+                <button
+                  type="submit"
+                  className="btn flex-1 bg-scanner-glow/10 border border-scanner-glow/30 text-scanner-glow hover:bg-scanner-glow/20 font-mono text-xs tracking-wider h-9 min-h-0"
+                  disabled={isFetching}
                 >
-                  <option value="">ALL</option>
-                  {archetypes.map((archetype, a) => (
-                    <option key={a} value={archetype}>{archetype}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                <label className="sm:w-48 text-sm font-medium text-scanner-dim shrink-0">Race Card</label>
-                <div className="flex-1 flex gap-3">
-                  <select
-                    id="filter-race-card"
-                    className="select select-bordered flex-1 bg-scanner-card border-scanner text-scanner"
-                    value={filters.race || ''}
-                    onChange={(e) => setFilters({ race: e.target.value || null })}
-                  >
-                    <option value="">ALL</option>
-                    {races.map((race, i) => (
-                      <option key={i} value={race.toLowerCase()}>{race}</option>
-                    ))}
-                  </select>
-                  <select
-                    id="filter-race-option"
-                    className="select select-bordered flex-1 bg-scanner-card border-scanner text-scanner"
-                    value={filters.raceOption}
-                    onChange={(e) => setFilters({ raceOption: e.target.value })}
-                    disabled={!filters.race}
-                  >
-                    <option value="">ALL</option>
-                    {raceOptionsValue.map((option, j) => (
-                      <option key={j} value={option}>{option}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                <label htmlFor="filter-attribute" className="sm:w-48 text-sm font-medium text-scanner-dim shrink-0">Attribute</label>
-                <select
-                  id="filter-attribute"
-                  className="select select-bordered flex-1 bg-scanner-card border-scanner text-scanner"
-                  value={filters.attribute}
-                  onChange={(e) => setFilters({ attribute: e.target.value })}
-                  disabled={disabledInputNotMonster}
+                  {isFetching ? (
+                    <span className="loading loading-spinner loading-xs"></span>
+                  ) : (
+                    'FIND MATCHES'
+                  )}
+                </button>
+                <button
+                  type="button"
+                  className="btn bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20 hover:border-red-500/50 font-mono text-xs tracking-wider h-9 min-h-0 px-4 transition-all"
+                  onClick={clearSearch}
                 >
-                  <option value="">ALL</option>
-                  <option>Earth</option>
-                  <option>Water</option>
-                  <option>Fire</option>
-                  <option>Wind</option>
-                  <option>Light</option>
-                  <option>Dark</option>
-                  <option>Divine</option>
-                </select>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  CLEAR
+                </button>
               </div>
-
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                <label htmlFor="filter-type" className="sm:w-48 text-sm font-medium text-scanner-dim shrink-0">Type</label>
-                <select
-                  id="filter-type"
-                  className="select select-bordered flex-1 bg-scanner-card border-scanner text-scanner"
-                  value={filters.type}
-                  onChange={(e) => setFilters({ type: e.target.value })}
-                  disabled={disabledInputNotMonster}
-                >
-                  <option value="">ALL</option>
-                  {types.map((type, t) => (
-                    <option key={t} value={type}>{type}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                <label htmlFor="filter-atk-op" className="sm:w-48 text-sm font-medium text-scanner-dim shrink-0">ATK</label>
-                <div className="flex-1 flex gap-3">
-                  <select
-                    id="filter-atk-op"
-                    className="select select-bordered w-24 bg-scanner-card border-scanner text-scanner"
-                    value={filters.atkOp}
-                    onChange={(e) => setFilters({ atkOp: e.target.value })}
-                    disabled={disabledInputNotMonster}
-                  >
-                    <option value="=">=</option>
-                    <option value="lt">&lt;</option>
-                    <option value="lte">&lt;=</option>
-                    <option value="gt">&gt;</option>
-                    <option value="gte">&gt;=</option>
-                  </select>
-                  <input
-                    id="filter-atk-val"
-                    type="number"
-                    className="input input-bordered flex-1 bg-scanner-card border-scanner text-scanner"
-                    min="0"
-                    max="5000"
-                    value={filters.atk}
-                    onChange={(e) => setFilters({ atk: e.target.value })}
-                    disabled={disabledInputNotMonster}
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                <label htmlFor="filter-def-op" className="sm:w-48 text-sm font-medium text-scanner-dim shrink-0">DEF</label>
-                <div className="flex-1 flex gap-3">
-                  <select
-                    id="filter-def-op"
-                    className="select select-bordered w-24 bg-scanner-card border-scanner text-scanner"
-                    value={filters.defOp}
-                    onChange={(e) => setFilters({ defOp: e.target.value })}
-                    disabled={disabledInputNotMonster}
-                  >
-                    <option value="=">=</option>
-                    <option value="lt">&lt;</option>
-                    <option value="lte">&lt;=</option>
-                    <option value="gt">&gt;</option>
-                    <option value="gte">&gt;=</option>
-                  </select>
-                  <input
-                    id="filter-def-val"
-                    type="number"
-                    className="input input-bordered flex-1 bg-scanner-card border-scanner text-scanner"
-                    min="0"
-                    max="5000"
-                    value={filters.def}
-                    onChange={(e) => setFilters({ def: e.target.value })}
-                    disabled={disabledInputNotMonster}
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                <label htmlFor="filter-level-op" className="sm:w-48 text-sm font-medium text-scanner-dim shrink-0">Level/Rank</label>
-                <div className="flex-1 flex gap-3">
-                  <select
-                    id="filter-level-op"
-                    className="select select-bordered w-24 bg-scanner-card border-scanner text-scanner"
-                    value={filters.lvlOp}
-                    onChange={(e) => setFilters({ lvlOp: e.target.value })}
-                    disabled={disabledInputNotMonster}
-                  >
-                    <option value="=">=</option>
-                    <option value="lt">&lt;</option>
-                    <option value="lte">&lt;=</option>
-                    <option value="gt">&gt;</option>
-                    <option value="gte">&gt;=</option>
-                  </select>
-                  <input
-                    id="filter-level-val"
-                    type="number"
-                    className="input input-bordered flex-1 bg-scanner-card border-scanner text-scanner"
-                    min="0"
-                    max="13"
-                    value={filters.level}
-                    onChange={(e) => setFilters({ level: e.target.value })}
-                    disabled={disabledInputNotMonster}
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                <label htmlFor="filter-scale-op" className="sm:w-48 text-sm font-medium text-scanner-dim shrink-0">Pendulum Scale</label>
-                <div className="flex-1 flex gap-3">
-                  <select
-                    id="filter-scale-op"
-                    className="select select-bordered w-24 bg-scanner-card border-scanner text-scanner"
-                    value={filters.scaleOp}
-                    onChange={(e) => setFilters({ scaleOp: e.target.value })}
-                    disabled={disabledInputNotMonster}
-                  >
-                    <option value="=">=</option>
-                    <option value="lt">&lt;</option>
-                    <option value="lte">&lt;=</option>
-                    <option value="gt">&gt;</option>
-                    <option value="gte">&gt;=</option>
-                  </select>
-                  <input
-                    id="filter-scale-val"
-                    type="number"
-                    className="input input-bordered flex-1 bg-scanner-card border-scanner text-scanner"
-                    min="0"
-                    max="13"
-                    value={filters.scale}
-                    onChange={(e) => setFilters({ scale: e.target.value })}
-                    disabled={disabledInputNotMonster}
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                <label htmlFor="filter-link-op" className="sm:w-48 text-sm font-medium text-scanner-dim shrink-0">Link</label>
-                <div className="flex-1 flex gap-3">
-                  <select
-                    id="filter-link-op"
-                    className="select select-bordered w-24 bg-scanner-card border-scanner text-scanner"
-                    value={filters.linkOp}
-                    onChange={(e) => setFilters({ linkOp: e.target.value })}
-                    disabled={disabledInputNotMonster}
-                  >
-                    <option value="=">=</option>
-                    <option value="lt">&lt;</option>
-                    <option value="lte">&lt;=</option>
-                    <option value="gt">&gt;</option>
-                    <option value="gte">&gt;=</option>
-                  </select>
-                  <input
-                    id="filter-link-val"
-                    type="number"
-                    className="input input-bordered flex-1 bg-scanner-card border-scanner text-scanner"
-                    min="0"
-                    max="6"
-                    value={filters.link}
-                    onChange={(e) => setFilters({ link: e.target.value })}
-                    disabled={disabledInputNotMonster}
-                  />
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                className="btn btn-block bg-primary text-primary-content hover:bg-primary/90 font-medium"
-                disabled={isFetching}
-              >
-                {isFetching ? (
-                  <span className="loading loading-spinner loading-sm"></span>
-                ) : (
-                  'Find matches'
-                )}
-              </button>
             </form>
           </div>
         )}
@@ -444,9 +536,9 @@ export default function Cards() {
       <div className="flex items-center gap-2 py-2">
         <div className="flex-1 h-px bg-scanner"></div>
         <div className="flex items-center gap-1">
-          <div className="w-1 h-1 rounded-full bg-cyan-500/40"></div>
+          <div className="w-1 h-1 rounded-full bg-scanner-glow/40"></div>
           <span className="text-[8px] font-mono text-scanner-dim/40 tracking-widest">RESULTS</span>
-          <div className="w-1 h-1 rounded-full bg-cyan-500/40"></div>
+          <div className="w-1 h-1 rounded-full bg-scanner-glow/40"></div>
         </div>
         <div className="flex-1 h-px bg-scanner"></div>
       </div>
@@ -476,15 +568,15 @@ export default function Cards() {
           <div role="alert" className="scanner-card-frame rounded-lg bg-scanner-panel border border-scanner p-6">
             <div className="flex flex-col items-center gap-3">
               <div className="flex gap-1">
-                <div className="w-1 h-4 bg-cyan-500/30 rounded signal-bar"></div>
-                <div className="w-1 h-4 bg-cyan-500/30 rounded signal-bar"></div>
-                <div className="w-1 h-4 bg-cyan-500/30 rounded signal-bar"></div>
-                <div className="w-1 h-4 bg-cyan-500/30 rounded signal-bar"></div>
+                <div className="w-1 h-4 bg-scanner-glow/30 rounded signal-bar"></div>
+                <div className="w-1 h-4 bg-scanner-glow/30 rounded signal-bar"></div>
+                <div className="w-1 h-4 bg-scanner-glow/30 rounded signal-bar"></div>
+                <div className="w-1 h-4 bg-scanner-glow/30 rounded signal-bar"></div>
               </div>
               <span className="text-sm font-mono text-scanner-dim/60">NO ENTRIES FOUND</span>
               <span className="text-xs font-mono text-scanner-dim/40">Adjust search parameters and retry</span>
               <button
-                className="btn btn-sm bg-cyan-500/10 border border-cyan-500/30 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-500/20 font-mono text-xs"
+                className="btn btn-sm bg-scanner-glow/10 border border-scanner-glow/30 text-scanner-glow hover:bg-scanner-glow/20 font-mono text-xs"
                 onClick={clearSearch}
               >
                 RESET QUERY
@@ -510,9 +602,9 @@ export default function Cards() {
       {!hasNextPage && cards.length > 0 && (
         <div className="flex flex-col items-center gap-2 py-4">
           <div className="flex items-center gap-2">
-            <div className="w-1 h-1 rounded-full bg-cyan-500/40"></div>
+            <div className="w-1 h-1 rounded-full bg-scanner-glow/40"></div>
             <span className="text-xs font-mono text-scanner-dim/40">END OF RESULTS</span>
-            <div className="w-1 h-1 rounded-full bg-cyan-500/40"></div>
+            <div className="w-1 h-1 rounded-full bg-scanner-glow/40"></div>
           </div>
           <span className="text-[10px] font-mono text-scanner-dim/30">
             {cards.length} OF {totalResults} RECORDS LOADED

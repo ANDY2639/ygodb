@@ -83,7 +83,6 @@ export function useCards(params: CardSearchParams, enabled: boolean) {
         limit: 20,
       })}`;
 
-      console.log('[useCards] Fetching:', url);
       const res = await fetch(url);
       if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
       return res.json() as Promise<CardsApiResponse>;

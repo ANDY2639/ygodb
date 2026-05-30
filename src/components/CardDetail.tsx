@@ -33,59 +33,57 @@ export default function CardDetail({ id }: CardDetailProps) {
             <img
               src={card.image || ''}
               alt={card.name}
-              className="rounded-lg w-full md:max-w-md lg:max-w-lg border border-scanner"
+              className="rounded-lg w-full landscape:w-full landscape:max-w-sm md:max-w-xs lg:max-w-md border border-scanner"
               onError={handleImageError}
             />
           </figure>
           <div className="flex-1 space-y-4">
-            <div>
-              <div className="scanner-card-frame rounded-lg bg-scanner-card border border-scanner overflow-hidden">
-                <h3 className="text-sm font-bold text-cyan-600 dark:text-cyan-400 text-center py-2 px-3 border-b border-scanner font-mono">
-                  INFORMATION
-                </h3>
-                <table className="table table-sm w-full">
-                  {(!['spell', 'trap'].includes(card.frameType)) ? (
-                    <>
-                      <tr className="border-b border-scanner/50">
-                        <td className="font-medium w-1/3 text-scanner-dim font-mono text-xs">ATTRIBUTE</td>
-                        <td className="text-scanner font-mono text-sm">{card.attribute}</td>
-                      </tr>
-                      <tr className="border-b border-scanner/50">
-                        <td className="font-medium text-scanner-dim font-mono text-xs">TYPES</td>
-                        <td className="text-scanner font-mono text-sm">{card.type}</td>
-                      </tr>
-                      {card.level && (
-                        <tr className="border-b border-scanner/50">
-                          <td className="font-medium text-scanner-dim font-mono text-xs">LEVEL</td>
-                          <td className="text-scanner font-mono text-sm">{card.level}</td>
-                        </tr>
-                      )}
-                      <tr className="border-b border-scanner/50">
-                        <td className="font-medium text-scanner-dim font-mono text-xs">ATK</td>
-                        <td className="text-cyan-600 dark:text-cyan-400 font-mono text-sm font-bold">{card.attack}</td>
-                      </tr>
-                      {card.defense && (
-                        <tr>
-                          <td className="font-medium text-scanner-dim font-mono text-xs">DEF</td>
-                          <td className="text-cyan-600 dark:text-cyan-400 font-mono text-sm font-bold">{card.defense}</td>
-                        </tr>
-                      )}
-                    </>
-                  ) : (
-                    <tr>
-                      <td className="font-medium w-1/3 text-scanner-dim font-mono text-xs">PROPERTY</td>
-                      <td className="text-scanner font-mono text-sm">{card.race}</td>
+            <div className="scanner-card-frame rounded-lg bg-scanner-card border border-scanner overflow-hidden">
+              <h3 className="text-sm font-bold text-cyan-400 text-center py-2 px-3 border-b border-scanner font-mono">
+                INFORMATION
+              </h3>
+              <table className="table table-sm w-full">
+                {(!['spell', 'trap'].includes(card.frameType)) ? (
+                  <>
+                    <tr className="border-b border-scanner/50">
+                      <td className="font-medium w-1/3 text-scanner-label font-mono text-xs">ATTRIBUTE</td>
+                      <td className="text-scanner-text font-mono text-sm">{card.attribute}</td>
                     </tr>
-                  )}
-                </table>
-              </div>
+                    <tr className="border-b border-scanner/50">
+                      <td className="font-medium text-scanner-label font-mono text-xs">TYPES</td>
+                      <td className="text-scanner-text font-mono text-sm">{card.type}</td>
+                    </tr>
+                    {card.level && (
+                      <tr className="border-b border-scanner/50">
+                        <td className="font-medium text-scanner-label font-mono text-xs">LEVEL</td>
+                        <td className="text-scanner-text font-mono text-sm">{card.level}</td>
+                      </tr>
+                    )}
+                    <tr className="border-b border-scanner/50">
+                      <td className="font-medium text-scanner-label font-mono text-xs">ATK</td>
+                      <td className="text-cyan-400 font-mono text-sm font-bold">{card.attack}</td>
+                    </tr>
+                    {card.defense && (
+                      <tr>
+                        <td className="font-medium text-scanner-label font-mono text-xs">DEF</td>
+                        <td className="text-cyan-400 font-mono text-sm font-bold">{card.defense}</td>
+                      </tr>
+                    )}
+                  </>
+                ) : (
+                  <tr>
+                    <td className="font-medium w-1/3 text-scanner-label font-mono text-xs">PROPERTY</td>
+                    <td className="text-scanner-text font-mono text-sm">{card.race}</td>
+                  </tr>
+                )}
+              </table>
             </div>
             <div className="scanner-card-frame rounded-lg bg-scanner-card border border-scanner overflow-hidden">
-              <h3 className="text-sm font-bold text-cyan-600 dark:text-cyan-400 text-center py-2 px-3 border-b border-scanner font-mono">
+              <h3 className="text-sm font-bold text-cyan-400 text-center py-2 px-3 border-b border-scanner font-mono">
                 CARD INFO
               </h3>
               <div
-                className="p-4 text-sm text-scanner whitespace-pre-line text-justify font-mono leading-relaxed"
+                className="p-4 text-sm text-scanner-text whitespace-pre-line text-justify font-mono leading-relaxed"
                 dangerouslySetInnerHTML={{ __html: card.description }}
               ></div>
             </div>
@@ -100,14 +98,14 @@ export default function CardDetail({ id }: CardDetailProps) {
       <div role="alert" className="scanner-card-frame rounded-lg bg-scanner-panel border border-scanner p-6">
         <div className="flex flex-col items-center gap-3">
           <div className="flex gap-1">
-            <div className="w-1 h-4 bg-cyan-500/30 rounded signal-bar"></div>
-            <div className="w-1 h-4 bg-cyan-500/30 rounded signal-bar"></div>
-            <div className="w-1 h-4 bg-cyan-500/30 rounded signal-bar"></div>
-            <div className="w-1 h-4 bg-cyan-500/30 rounded signal-bar"></div>
+            <div className="w-1 h-4 bg-scanner-glow/30 rounded signal-bar"></div>
+            <div className="w-1 h-4 bg-scanner-glow/30 rounded signal-bar"></div>
+            <div className="w-1 h-4 bg-scanner-glow/30 rounded signal-bar"></div>
+            <div className="w-1 h-4 bg-scanner-glow/30 rounded signal-bar"></div>
           </div>
-          <span className="text-sm font-mono text-scanner-dim/60">NO DATA FOUND</span>
-          <span className="text-xs font-mono text-scanner-dim/40">Card not found in database</span>
-          <a href="/" className="btn btn-sm bg-cyan-500/10 border border-cyan-500/30 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-500/20 font-mono text-xs">
+          <span className="text-sm font-mono text-scanner-label">NO DATA FOUND</span>
+          <span className="text-xs font-mono text-scanner-muted">Card not found in database</span>
+          <a href="/" className="btn btn-sm bg-scanner-glow/10 border border-scanner-glow/30 text-scanner-glow hover:bg-scanner-glow/20 font-mono text-xs">
             RETURN TO DATABASE
           </a>
         </div>
@@ -122,7 +120,7 @@ export default function CardDetail({ id }: CardDetailProps) {
           <div className="w-2 h-2 rounded-full bg-red-500 pulse-dot"></div>
           <span className="text-sm font-mono text-red-500">SYSTEM ERROR</span>
         </div>
-        <p className="text-xs font-mono text-scanner-dim/60 mt-2">{error.message}</p>
+         <p className="text-xs font-mono text-scanner-label mt-2">{error.message}</p>
         <button
           className="btn btn-sm mt-3 bg-red-500/10 border border-red-500/30 text-red-500 hover:bg-red-500/20 font-mono text-xs"
           onClick={() => window.location.reload()}

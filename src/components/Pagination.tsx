@@ -34,10 +34,10 @@ export default function Pagination({ currentPage, total, perPage, loading, onCha
 
   return (
     <div className="flex flex-col items-center gap-3 py-4">
-      <div className="scanner-card-frame rounded-lg bg-[#0d1321] border border-[#1e293b] px-4 py-3">
+      <div className="scanner-card-frame rounded-lg bg-scanner-panel border border-scanner px-4 py-3">
         <div className="flex items-center gap-3 flex-wrap justify-center">
           <button
-            className="btn btn-sm bg-[#111827] border border-[#1e293b] text-[#94a3b8] hover:border-[#00f0ff]/30 hover:text-[#00f0ff] gap-1 font-mono text-xs"
+            className="btn btn-sm bg-scanner-card border border-scanner text-scanner-label hover:border-scanner-glow/30 hover:text-scanner-glow gap-1 font-mono text-xs"
             disabled={currentPage <= 1 || loading}
             onClick={() => onChange(currentPage - 1)}
             aria-label="Previous page"
@@ -53,7 +53,7 @@ export default function Pagination({ currentPage, total, perPage, loading, onCha
               p === '...' ? (
                 <button
                   key={`ellipsis-${i}`}
-                  className="btn btn-sm btn-ghost btn-disabled px-1 min-w-6 font-mono text-xs text-[#94a3b8]/40"
+                  className="btn btn-sm btn-ghost btn-disabled px-1 min-w-6 font-mono text-xs text-scanner-muted/40"
                   disabled
                 >
                   …
@@ -61,11 +61,11 @@ export default function Pagination({ currentPage, total, perPage, loading, onCha
               ) : (
                 <button
                   key={p}
-                  className={`btn btn-sm min-w-8 font-mono text-xs ${
-                    p === currentPage
-                      ? 'bg-[#00f0ff]/20 border border-[#00f0ff]/40 text-[#00f0ff]'
-                      : 'bg-[#111827] border border-[#1e293b] text-[#94a3b8] hover:border-[#00f0ff]/30 hover:text-[#00f0ff]'
-                  }`}
+                   className={`btn btn-sm min-w-8 font-mono text-xs ${
+                     p === currentPage
+                       ? 'bg-scanner-glow/20 border border-scanner-glow/40 text-scanner-glow'
+                       : 'bg-scanner-card border border-scanner text-scanner-label hover:border-scanner-glow/30 hover:text-scanner-glow'
+                   }`}
                   onClick={() => onChange(p as number)}
                 >
                   {p}
@@ -75,7 +75,7 @@ export default function Pagination({ currentPage, total, perPage, loading, onCha
           </div>
 
           <button
-            className="btn btn-sm bg-[#111827] border border-[#1e293b] text-[#94a3b8] hover:border-[#00f0ff]/30 hover:text-[#00f0ff] gap-1 font-mono text-xs"
+            className="btn btn-sm bg-scanner-card border border-scanner text-scanner-label hover:border-scanner-glow/30 hover:text-scanner-glow gap-1 font-mono text-xs"
             disabled={currentPage >= totalPages || loading}
             onClick={() => onChange(currentPage + 1)}
             aria-label="Next page"
@@ -89,11 +89,11 @@ export default function Pagination({ currentPage, total, perPage, loading, onCha
       </div>
 
       <div className="flex items-center gap-2">
-        <div className="w-1 h-1 rounded-full bg-[#00f0ff]/40"></div>
-        <span className="text-xs font-mono text-[#94a3b8]/50">
+        <div className="w-1 h-1 rounded-full bg-scanner-glow/40"></div>
+        <span className="text-xs font-mono text-scanner-label/50">
           REGISTROS {start} - {end} DE {total}
         </span>
-        <div className="w-1 h-1 rounded-full bg-[#00f0ff]/40"></div>
+        <div className="w-1 h-1 rounded-full bg-scanner-glow/40"></div>
       </div>
     </div>
   );
